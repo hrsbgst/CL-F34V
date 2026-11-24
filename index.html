@@ -32,7 +32,7 @@
     --brand-text-header: #ffffff;
     --brand-blue: #2563eb;
     --panel-gray: #f1f5f9;
-    --logo-chatime: url("https://png.pngtree.com/png-clipart/20230916/original/pngtree-cute-ghost-logo-vector-illustration-clipart-png-image_12237138.png");
+    --logo-chatime: url("https://pub-e6e58aeeeb9c474fb0d35a5f6f05b8ca.r2.dev/uploads/icon/254476_2025_09_25_11_04_11_V9n2QW_300x300_icon.png");
     --sticky-top-offset: 78px;
   }
 
@@ -190,7 +190,7 @@
     z-index: 250;
     background: var(--bg);
     padding-top: 6px;
-    padding-bottom: 6px;
+    padding-bottom: 0;
     transition: background-color 0.25s ease;
   }
 
@@ -394,7 +394,7 @@
   .panel.active { display: block; }
 
   /* ============ ITEM TABLE ============ */
-  .table-wrapper { position: relative; }
+  .table-wrapper { position: relative; background: var(--card); }
   table.item-table {
     width: 100%;
     border-collapse: separate;
@@ -563,11 +563,19 @@
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   /* ============ KELOLA ARTIKEL ============ */
+  .kelola-sticky-bar {
+    position: sticky;
+    top: var(--thead-top, 160px);
+    z-index: 210;
+    background: var(--bg);
+    padding-top: 10px;
+    padding-bottom: 0;
+  }
   .artikel-toolbar {
     display: flex;
     gap: 8px;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     flex-wrap: wrap;
   }
   .artikel-toolbar .spacer { flex: 1; }
@@ -588,8 +596,9 @@
   .artikel-tabs {
     display: flex;
     gap: 6px;
-    margin-bottom: 10px;
+    margin-bottom: 0;
     border-bottom: 1px solid var(--line);
+    background: var(--bg);
   }
   .artikel-tab {
     padding: 6px 14px;
@@ -607,8 +616,7 @@
     border-collapse: collapse;
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 12px;
-    overflow: hidden;
+    border-radius: 0;
   }
   .artikel-table thead th {
     text-align: left;
@@ -618,8 +626,12 @@
     text-transform: uppercase;
     padding: 8px 12px;
     background: #f8fafc;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 2px solid var(--line);
     user-select: none;
+    position: sticky;
+    top: var(--kelola-thead-top, 235px);
+    z-index: 200;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
   }
   .artikel-table thead th.sortable { cursor: pointer; }
   .artikel-table thead th.sortable:hover { color: var(--brand-primary); }
@@ -1324,18 +1336,20 @@
     </div>
 
     <div id="kelola" class="panel">
-      <div class="artikel-toolbar">
-        <button class="btn primary" id="addArtikelBtn">+ Tambah Artikel Baru</button>
-        <div class="artikel-search-wrap">
-          <input type="text" id="artikelSearchBox" placeholder="Cari nama / masa simpan...">
+      <div class="kelola-sticky-bar" id="kelolaStickyBar">
+        <div class="artikel-toolbar">
+          <button class="btn primary" id="addArtikelBtn">+ Tambah Artikel Baru</button>
+          <div class="artikel-search-wrap">
+            <input type="text" id="artikelSearchBox" placeholder="Cari nama / masa simpan...">
+          </div>
+          <div class="spacer"></div>
+          <span style="font-size:11px;color:var(--muted);font-weight:500;">Gunakan tombol ▲/▼ atau drag baris</span>
         </div>
-        <div class="spacer"></div>
-        <span style="font-size:11px;color:var(--muted);font-weight:500;">Gunakan tombol ▲/▼ atau drag baris</span>
-      </div>
 
-      <div class="artikel-tabs">
-        <div class="artikel-tab active" data-artikel-cat="labelling">Labelling Chatime</div>
-        <div class="artikel-tab" data-artikel-cat="ouast">Labelling OUAST</div>
+        <div class="artikel-tabs">
+          <div class="artikel-tab active" data-artikel-cat="labelling">Labelling Chatime</div>
+          <div class="artikel-tab" data-artikel-cat="ouast">Labelling OUAST</div>
+        </div>
       </div>
 
       <table class="artikel-table" id="artikelTable">
@@ -1972,12 +1986,18 @@ function updateStickyPositions() {
   const stickyTop = document.getElementById('stickyTop');
   if (!header || !stickyTop) return;
 
-  const headerHeight = Math.ceil(header.getBoundingClientRect().height);
+  const headerHeight = Math.floor(header.getBoundingClientRect().height);
   document.documentElement.style.setProperty('--sticky-top-offset', headerHeight + 'px');
 
-  const stickyTopHeight = Math.ceil(stickyTop.offsetHeight);
+  const stickyTopHeight = Math.floor(stickyTop.getBoundingClientRect().height);
   const theadOffset = headerHeight + stickyTopHeight;
   document.documentElement.style.setProperty('--thead-top', theadOffset + 'px');
+
+  const kelolaBar = document.getElementById('kelolaStickyBar');
+  if (kelolaBar && kelolaBar.offsetHeight > 0) {
+    const kelolaBarHeight = Math.floor(kelolaBar.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--kelola-thead-top', (theadOffset + kelolaBarHeight) + 'px');
+  }
 }
 
 window.addEventListener('resize', updateStickyPositions);
